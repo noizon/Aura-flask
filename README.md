@@ -75,6 +75,5 @@ Aura-flask/
 <div align="center">
 NoiZoN · 2 курс · IT Hub
 
-GitHub · Telegram
-
+GitHub - noizon · Telegram - NoiZoNxSolo
 </div> ```
