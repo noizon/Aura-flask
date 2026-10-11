@@ -75,142 +75,72 @@ comment_limiter = RateLimiter(max_attempts=20, window_seconds=60)
 # ============================================================
 TRANSLATIONS = {
     'ru': {
-        'feed': 'Лента',
-        'trends': 'Тренды',
-        'chats': 'Чаты',
-        'notifications': 'Уведомления',
-        'saved': 'Сохранённые',
-        'profile': 'Профиль',
-        'logout': 'Выйти',
-        'login': 'Войти',
-        'register': 'Регистрация',
-        'search_placeholder': 'Поиск людей...',
-        'whats_new': 'Что у вас нового?',
-        'publish': 'Опубликовать',
-        'photo': 'Фото',
-        'for_you': 'Для вас',
-        'following': 'Подписки',
-        'no_posts': 'Пока постов нет',
-        'delete': 'Удалить',
-        'edit_profile': 'Редактировать профиль',
-        'subscribe': 'Подписаться',
-        'unsubscribe': 'Отписаться',
-        'write': 'Написать',
-        'name': 'Имя',
-        'age': 'Возраст',
-        'city': 'Город',
-        'about': 'О себе',
-        'posts': 'постов',
-        'followers': 'подписчиков',
-        'following_count': 'подписок',
-        'repost': 'Репост',
-        'views': 'Просмотры',
-        'comments': 'Комментарии',
-        'language': 'Язык',
-        'save': 'Сохранить',
-        'cancel': 'Отмена',
-        'my_profile': 'Мой профиль',
-        'admin_panel': 'Админ-панель',
-        'users': 'Пользователей',
-        'messages': 'Сообщений',
-        'blocked': 'Забанено',
-        'muted': 'В муте',
-        'mute': 'Мут',
-        'unmute': 'Размут',
-        'ban': 'Бан',
-        'unban': 'Разбан',
-        'security_log': 'Лог безопасности',
-        'recent_events': 'Последние события',
-        'this_is_you': 'это ты',
-        'send': 'Отправить',
-        'message_placeholder': 'Сообщение...',
+        'feed': 'Лента', 'trends': 'Тренды', 'chats': 'Чаты',
+        'notifications': 'Уведомления', 'saved': 'Сохранённые',
+        'profile': 'Профиль', 'logout': 'Выйти', 'login': 'Войти',
+        'register': 'Регистрация', 'search_placeholder': 'Поиск людей...',
+        'whats_new': 'Что у вас нового?', 'publish': 'Опубликовать',
+        'photo': 'Фото', 'for_you': 'Для вас', 'following': 'Подписки',
+        'no_posts': 'Пока постов нет', 'delete': 'Удалить',
+        'edit_profile': 'Редактировать профиль', 'subscribe': 'Подписаться',
+        'unsubscribe': 'Отписаться', 'write': 'Написать',
+        'name': 'Имя', 'age': 'Возраст', 'city': 'Город', 'about': 'О себе',
+        'posts': 'постов', 'followers': 'подписчиков', 'following_count': 'подписок',
+        'repost': 'Репост', 'views': 'Просмотры', 'comments': 'Комментарии',
+        'language': 'Язык', 'save': 'Сохранить', 'cancel': 'Отмена',
+        'my_profile': 'Мой профиль', 'admin_panel': 'Админ-панель',
+        'users': 'Пользователей', 'messages': 'Сообщений', 'blocked': 'Забанено',
+        'muted': 'В муте', 'mute': 'Мут', 'unmute': 'Размут', 'ban': 'Бан',
+        'unban': 'Разбан', 'security_log': 'Лог безопасности',
+        'recent_events': 'Последние события', 'this_is_you': 'это ты',
+        'send': 'Отправить', 'message_placeholder': 'Сообщение...',
         'comment_placeholder': 'Написать комментарий...',
-        'no_comments': 'Комментариев нет',
-        'no_dialogs': 'Диалогов нет',
+        'no_comments': 'Комментариев нет', 'no_dialogs': 'Диалогов нет',
         'no_notifications': 'Уведомлений нет',
         'no_saved': 'Вы пока ничего не сохранили',
         'trends_title': 'Самые популярные хэштеги',
         'no_tags': 'Пока нет хэштегов. Напиши пост с #тегом!',
-        'login_title': 'Вход',
-        'register_title': 'Регистрация',
-        'login_placeholder': 'Логин',
-        'password_placeholder': 'Пароль',
+        'login_title': 'Вход', 'register_title': 'Регистрация',
+        'login_placeholder': 'Логин', 'password_placeholder': 'Пароль',
         'confirm_placeholder': 'Повторите пароль',
-        'no_account': 'Нет аккаунта?',
-        'have_account': 'Уже есть аккаунт?',
+        'no_account': 'Нет аккаунта?', 'have_account': 'Уже есть аккаунт?',
         'current_lang': 'Текущий язык: Русский',
     },
     'en': {
-        'feed': 'Feed',
-        'trends': 'Trends',
-        'chats': 'Chats',
-        'notifications': 'Notifications',
-        'saved': 'Saved',
-        'profile': 'Profile',
-        'logout': 'Log out',
-        'login': 'Log in',
-        'register': 'Sign up',
-        'search_placeholder': 'Search people...',
-        'whats_new': "What's new?",
-        'publish': 'Publish',
-        'photo': 'Photo',
-        'for_you': 'For you',
-        'following': 'Following',
-        'no_posts': 'No posts yet',
-        'delete': 'Delete',
-        'edit_profile': 'Edit profile',
-        'subscribe': 'Follow',
-        'unsubscribe': 'Unfollow',
-        'write': 'Message',
-        'name': 'Name',
-        'age': 'Age',
-        'city': 'City',
-        'about': 'About',
-        'posts': 'posts',
-        'followers': 'followers',
-        'following_count': 'following',
-        'repost': 'Repost',
-        'views': 'Views',
-        'comments': 'Comments',
-        'language': 'Language',
-        'save': 'Save',
-        'cancel': 'Cancel',
-        'my_profile': 'My profile',
-        'admin_panel': 'Admin panel',
-        'users': 'Users',
-        'messages': 'Messages',
-        'blocked': 'Blocked',
-        'muted': 'Muted',
-        'mute': 'Mute',
-        'unmute': 'Unmute',
-        'ban': 'Ban',
-        'unban': 'Unban',
-        'security_log': 'Security log',
-        'recent_events': 'Recent events',
-        'this_is_you': 'this is you',
-        'send': 'Send',
-        'message_placeholder': 'Message...',
+        'feed': 'Feed', 'trends': 'Trends', 'chats': 'Chats',
+        'notifications': 'Notifications', 'saved': 'Saved',
+        'profile': 'Profile', 'logout': 'Log out', 'login': 'Log in',
+        'register': 'Sign up', 'search_placeholder': 'Search people...',
+        'whats_new': "What's new?", 'publish': 'Publish', 'photo': 'Photo',
+        'for_you': 'For you', 'following': 'Following', 'no_posts': 'No posts yet',
+        'delete': 'Delete', 'edit_profile': 'Edit profile',
+        'subscribe': 'Follow', 'unsubscribe': 'Unfollow', 'write': 'Message',
+        'name': 'Name', 'age': 'Age', 'city': 'City', 'about': 'About',
+        'posts': 'posts', 'followers': 'followers', 'following_count': 'following',
+        'repost': 'Repost', 'views': 'Views', 'comments': 'Comments',
+        'language': 'Language', 'save': 'Save', 'cancel': 'Cancel',
+        'my_profile': 'My profile', 'admin_panel': 'Admin panel',
+        'users': 'Users', 'messages': 'Messages', 'blocked': 'Blocked',
+        'muted': 'Muted', 'mute': 'Mute', 'unmute': 'Unmute', 'ban': 'Ban',
+        'unban': 'Unban', 'security_log': 'Security log',
+        'recent_events': 'Recent events', 'this_is_you': 'this is you',
+        'send': 'Send', 'message_placeholder': 'Message...',
         'comment_placeholder': 'Write a comment...',
-        'no_comments': 'No comments',
-        'no_dialogs': 'No dialogs',
+        'no_comments': 'No comments', 'no_dialogs': 'No dialogs',
         'no_notifications': 'No notifications',
         'no_saved': "You haven't saved anything yet",
         'trends_title': 'Most popular hashtags',
         'no_tags': 'No hashtags yet. Post with #tag!',
-        'login_title': 'Log in',
-        'register_title': 'Sign up',
-        'login_placeholder': 'Username',
-        'password_placeholder': 'Password',
+        'login_title': 'Log in', 'register_title': 'Sign up',
+        'login_placeholder': 'Username', 'password_placeholder': 'Password',
         'confirm_placeholder': 'Repeat password',
-        'no_account': 'No account?',
-        'have_account': 'Already have an account?',
+        'no_account': 'No account?', 'have_account': 'Already have an account?',
         'current_lang': 'Current language: English',
     }
 }
 
 
 def t(key):
-    """Перевод по ключу для текущего языка."""
     lang = session.get('lang', 'ru')
     return TRANSLATIONS.get(lang, TRANSLATIONS['ru']).get(key, key)
 
@@ -281,7 +211,6 @@ def init_db():
         ''')
         db.commit()
 
-        # ---- МИГРАЦИИ ----
         cols = [r[1] for r in db.execute("PRAGMA table_info(users)").fetchall()]
         if 'is_admin' not in cols:
             db.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
@@ -300,7 +229,6 @@ def init_db():
             db.execute("ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0")
         db.commit()
 
-        # ---- ОСТАЛЬНЫЕ ТАБЛИЦЫ ----
         init_messages_table()
         init_social_tables()
         init_follows_table()
@@ -317,7 +245,12 @@ def login_required(f):
             flash('Пожалуйста, войдите в систему.', 'error')
             return redirect(url_for('login'))
         user = current_user()
-        if user and user['is_blocked']:
+        # 👇 ФИКС: если юзера нет в БД — выкидываем
+        if user is None:
+            session.clear()
+            flash('Сессия устарела. Войдите снова.', 'error')
+            return redirect(url_for('login'))
+        if user['is_blocked']:
             session.clear()
             flash('Ваш аккаунт заблокирован.', 'error')
             return redirect(url_for('login'))
@@ -344,7 +277,12 @@ def admin_required(f):
             flash('Пожалуйста, войдите в систему.', 'error')
             return redirect(url_for('login'))
         user = current_user()
-        if not user or not user['is_admin']:
+        # 👇 ФИКС: если юзера нет в БД — выкидываем
+        if user is None:
+            session.clear()
+            flash('Сессия устарела. Войдите снова.', 'error')
+            return redirect(url_for('login'))
+        if not user['is_admin']:
             log_security_event('admin_access_denied',
                                username=session.get('username'),
                                ip=get_client_ip(),
