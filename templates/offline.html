@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Офлайн{% endblock %}
+{% block content %}
+<div class="empty" style="text-align:center;padding:60px 20px">
+    <h1 style="font-size:48px">📡</h1>
+    <h2>Нет соединения</h2>
+    <p class="muted">Проверьте интернет и попробуйте снова</p>
+    <button onclick="location.reload()" class="btn-primary" style="margin-top:20px">
+        🔄 Обновить
+    </button>
+</div>
+{% endblock %}

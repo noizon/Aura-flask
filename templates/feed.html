@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Лента{% endblock %}
+{% block content %}
+
+<form method="POST" action="{{ url_for('feed') }}" enctype="multipart/form-data" class="post-form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <textarea name="content" placeholder="Что у вас нового?" maxlength="280"></textarea>
+    <div class="post-form-row">
+        <label class="file-label">
+            📷 Фото
+            <input type="file" name="image" accept="image/*" hidden>
+        </label>
+        <button type="submit">Опубликовать</button>
+    </div>
+</form>
+
+<div class="feed-tabs">
+    <a href="{{ url_for('feed', tab='all') }}" class="feed-tab {% if tab == 'all' %}active{% endif %}">Для вас</a>
+    <a href="{{ url_for('feed', tab='following') }}" class="feed-tab {% if tab == 'following' %}active{% endif %}">Подписки</a>
+</div>
+
+{% if posts %}
+    {% for post in posts %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <div class="post-avatar">
+                {% if post.avatar %}
+                    <img src="{{ url_for('static', filename='avatars/' + post.avatar) }}" alt="">
+                {% else %}
+                    <div class="avatar-placeholder">{{ post.username[0].upper() }}</div>
+                {% endif %}
+            </div>
+            <div class="post-body">
+                <div class="post-header">
+                    <a href="{{ url_for('user_profile', username=post.username) }}" class="post-author">
+                        @{{ post.username }}
+                    </a>
+                    <span class="post-date">{{ post.created_at|humanize }}</span>
+                </div>
+
+                {% if post.repost_of %}
+                    <div class="repost-badge">🔁 Репост</div>
+                {% endif %}
+
+                {% if post.content %}<div class="post-content">{{ post.content|highlight }}</div>{% endif %}
+                {% if post.image %}
+                    <img class="post-image" src="{{ url_for('static', filename='posts/' + post.image) }}" alt="">
+                {% endif %}
+
+                <div class="reactions">
+                    {% set r = reactions.get(post.id, {'counts': {}, 'mine': []}) %}
+                    {% for emoji in all_emojis %}
+                        {% set count = r.counts.get(emoji, 0) %}
+                        <button class="reaction-btn {% if emoji in r.mine %}active{% endif %}"
+                                data-post-id="{{ post.id }}"
+                                data-emoji="{{ emoji }}">
+                            {{ emoji }}{% if count %}<span class="reaction-count"> {{ count }}</span>{% endif %}
+                        </button>
+                    {% endfor %}
+
+                    <button class="toggle-comments" data-post-id="{{ post.id }}">
+                        💬 {{ comment_counts.get(post.id, 0) }}
+                    </button>
+
+                    <button class="reaction-btn repost-btn"
+                            data-post-id="{{ post.id }}"
+                            title="Репост">
+                        🔁 <span class="repost-count">{{ post.repost_count or 0 }}</span>
+                    </button>
+
+                    <span class="reaction-btn views-btn" title="Просмотры">
+                        👁 {{ post.views or 0 }}
+                    </span>
+
+                    <button class="reaction-btn save-btn {% if post.id in saved %}active{% endif %}"
+                            data-post-id="{{ post.id }}">🔖</button>
+
+                    {% if post.username == current_user.username %}
+                        <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" class="delete-form">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <button type="submit" class="delete-btn">Удалить</button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <div class="comments-section">
+                    <div class="comments-box" id="comments-{{ post.id }}" hidden></div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="empty">Пока постов нет</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Редактировать профиль{% endblock %}
+{% block content %}
+<h1>Редактировать профиль</h1>
+
+{% if user.avatar %}
+    <div class="current-avatar">
+        <img src="{{ url_for('static', filename='avatars/' + user.avatar) }}" alt="">
+        <p>Текущий аватар</p>
+    </div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+    <label>Новый аватар
+        <input type="file" name="avatar" accept="image/*">
+    </label>
+
+    <label>Имя
+        <input type="text" name="full_name" value="{{ user.full_name or '' }}">
+    </label>
+
+    <label>Возраст
+        <input type="number" name="age" value="{{ user.age or '' }}" min="0" max="150">
+    </label>
+
+    <label>Город
+        <input type="text" name="city" value="{{ user.city or '' }}">
+    </label>
+
+    <label>О себе
+        <textarea name="about" rows="3">{{ user.about or '' }}</textarea>
+    </label>
+
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

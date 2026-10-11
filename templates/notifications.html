@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Уведомления{% endblock %}
+{% block content %}
+<h1>Уведомления</h1>
+
+{% if items %}
+    <div class="notifications-list">
+        {% for n in items %}
+            <div class="notification {% if not n.is_read %}unread{% endif %}">
+                <div class="notif-avatar">
+                    {% if n.actor_avatar %}
+                        <img src="{{ url_for('static', filename='avatars/' + n.actor_avatar) }}" alt="">
+                    {% elif n.actor_username %}
+                        <div class="avatar-placeholder">{{ n.actor_username[0].upper() }}</div>
+                    {% else %}
+                        <div class="avatar-placeholder">?</div>
+                    {% endif %}
+                </div>
+                <div class="notif-body">
+                    {% if n.actor_username %}
+                        <a href="{{ url_for('user_profile', username=n.actor_username) }}">@{{ n.actor_username }}</a>
+                    {% endif %}
+                    {% if n.type == 'follow' %} подписался на вас
+                    {% elif n.type == 'reaction' %} отреагировал на ваш пост
+                    {% elif n.type == 'comment' %} оставил комментарий
+                    {% endif %}
+                    <div class="notif-date">{{ n.created_at|humanize }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty">Уведомлений нет</div>
+{% endif %}
+{% endblock %}

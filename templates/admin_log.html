@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Security Log{% endblock %}
+{% block content %}
+
+<h1>🛡️ Security Log</h1>
+<p><a href="{{ url_for('profile') }}">← Назад в профиль</a></p>
+
+<div class="dialogs">
+    {% for e in events %}
+        <div class="dialog" style="cursor:default">
+            <div class="dialog-body">
+                <div class="dialog-top">
+                    <span class="dialog-name" style="font-family:monospace;font-size:13px">{{ e.event }}</span>
+                    <span class="dialog-time">{{ e.created_at|humanize }}</span>
+                </div>
+                <div class="dialog-last">
+                    {% if e.username %}@{{ e.username }} · {% endif %}
+                    IP: {{ e.ip or '?' }}
+                    {% if e.details %} · {{ e.details }}{% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

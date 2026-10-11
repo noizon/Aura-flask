@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Чаты{% endblock %}
+{% block content %}
+<h1>Чаты</h1>
+
+{% if dialogs %}
+    <div class="dialogs">
+        {% for d in dialogs %}
+            <a class="dialog" href="{{ url_for('chat', username=d.other_username) }}">
+                <div class="dialog-avatar">
+                    {% if d.other_avatar %}
+                        <img src="{{ url_for('static', filename='avatars/' + d.other_avatar) }}" alt="">
+                    {% else %}
+                        <div class="avatar-placeholder">{{ d.other_username[0].upper() }}</div>
+                    {% endif %}
+                </div>
+                <div class="dialog-body">
+                    <div class="dialog-top">
+                        <span class="dialog-name">@{{ d.other_username }}</span>
+                        <span class="dialog-time">{{ d.last_time|humanize }}</span>
+                    </div>
+                    <div class="dialog-last">{{ d.last_message or '' }}</div>
+                </div>
+                {% if d.unread %}
+                    <span class="dialog-unread">{{ d.unread }}</span>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty">Диалогов нет</div>
+{% endif %}
+{% endblock %}

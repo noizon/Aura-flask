@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Поиск{% endblock %}
+{% block content %}
+<h1>Поиск людей</h1>
+
+<form method="GET" class="post-form">
+    <div class="post-form-row">
+        <input type="text" name="q" placeholder="Введите имя..." value="{{ q }}" style="flex:1">
+        <button type="submit">Найти</button>
+    </div>
+</form>
+
+{% if q %}
+    <h2>Результаты: «{{ q }}»</h2>
+    {% if results %}
+        <div class="dialogs">
+            {% for u in results %}
+                <a class="dialog" href="{{ url_for('user_profile', username=u.username) }}">
+                    <div class="dialog-avatar">
+                        {% if u.avatar %}
+                            <img src="{{ url_for('static', filename='avatars/' + u.avatar) }}" alt="">
+                        {% else %}
+                            <div class="avatar-placeholder">{{ u.username[0].upper() }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="dialog-body">
+                        <div class="dialog-top">
+                            <span class="dialog-name">@{{ u.username }}</span>
+                        </div>
+                        {% if u.full_name %}<div class="dialog-last">{{ u.full_name }}</div>{% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty">Никого не найдено</div>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Тренды{% endblock %}
+{% block content %}
+
+<h1>🔥 Тренды</h1>
+<p class="muted">Самые популярные хэштеги</p>
+
+{% if tags %}
+    <div class="dialogs">
+        {% for tag, count in tags %}
+            <a class="dialog" href="{{ url_for('tag_feed', tag=tag) }}">
+                <div class="dialog-avatar">
+                    <div class="avatar-placeholder" style="font-size:22px">#</div>
+                </div>
+                <div class="dialog-body">
+                    <div class="dialog-top">
+                        <span class="dialog-name">#{{ tag }}</span>
+                        <span class="dialog-time">{{ count }} постов</span>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty">Пока нет хэштегов. Напиши пост с #тегом!</div>
+{% endif %}
+
+{% endblock %}

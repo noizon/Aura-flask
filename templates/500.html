@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}500{% endblock %}
+{% block content %}
+<div class="empty">
+    <h1>500 — Ошибка сервера</h1>
+    <p><a href="{{ url_for('feed') }}">На главную</a></p>
+</div>
+{% endblock %}

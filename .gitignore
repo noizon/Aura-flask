@@ -1,0 +1,10 @@
+.secret_key
+users.db
+users.db-wal
+users.db-shm
+__pycache__/
+*.pyc
+.pytest_cache/
+static/avatars/*
+static/posts/*
+!static/avatars/default.png

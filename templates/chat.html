@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Чат с @{{ other.username }}{% endblock %}
+{% block content %}
+
+<div class="chat-header">
+    <a class="back" href="{{ url_for('chats') }}">←</a>
+    <div class="chat-header-avatar">
+        {% if other.avatar %}
+            <img src="{{ url_for('static', filename='avatars/' + other.avatar) }}" alt="">
+        {% else %}
+            <div class="avatar-placeholder small">{{ other.username[0].upper() }}</div>
+        {% endif %}
+    </div>
+    <a class="chat-header-name" href="{{ url_for('user_profile', username=other.username) }}">
+        @{{ other.username }}
+    </a>
+</div>
+
+<div class="messages">
+    {% for m in messages %}
+        <div class="msg {% if m.sender_id == user.id %}mine{% else %}theirs{% endif %}">
+            <div class="msg-bubble">{{ m.content }}</div>
+            <div class="msg-time">{{ m.created_at|humanize }}</div>
+        </div>
+    {% else %}
+        <div class="empty">Сообщений нет. Напишите первым!</div>
+    {% endfor %}
+</div>
+
+<form class="msg-form" method="POST">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="text" name="content" placeholder="Сообщение..." maxlength="2000" autocomplete="off">
+    <button type="submit">➤</button>
+</form>
+
+{% endblock %}

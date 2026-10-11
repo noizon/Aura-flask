@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Мой профиль{% endblock %}
+{% block content %}
+
+<div class="profile-header">
+    <div class="profile-avatar-big">
+        {% if user.avatar %}
+            <img src="{{ url_for('static', filename='avatars/' + user.avatar) }}" alt="">
+        {% else %}
+            <div class="avatar-placeholder">{{ user.username[0].upper() }}</div>
+        {% endif %}
+    </div>
+    <h1>
+        @{{ user.username }}
+        {% if user.is_admin %}<span style="color:#c084fc">👑</span>{% endif %}
+        {% if is_muted_now %}<span style="color:#f59e0b">🔇</span>{% endif %}
+        {% if is_online(user) %}<span class="online-dot" title="Онлайн"></span>{% endif %}
+    </h1>
+
+    <div class="profile-stats">
+        <div><b>{{ posts_count }}</b><span>{{ t('posts') }}</span></div>
+        <div><b>{{ followers_count }}</b><span>{{ t('followers') }}</span></div>
+        <div><b>{{ following_count }}</b><span>{{ t('following_count') }}</span></div>
+    </div>
+
+    <div class="profile-actions">
+        <a class="btn-primary" href="{{ url_for('profile_edit') }}">{{ t('edit_profile') }}</a>
+    </div>
+</div>
+
+{% if is_muted_now %}
+<div class="flash error" style="margin:20px 0">
+    {% if lang == 'ru' %}
+        🔇 Вы находитесь в муте. Вы не можете публиковать посты, комментировать и писать в чат.
+    {% else %}
+        🔇 You are muted. You can't post, comment or chat.
+    {% endif %}
+    {% if user.muted_until %} {{ user.muted_until }}{% endif %}
+</div>
+{% endif %}
+
+<div class="profile-card">
+    <p><b>{{ t('name') }}:</b> {{ user.full_name or '—' }}</p>
+    <p><b>{{ t('age') }}:</b> {{ user.age or '—' }}</p>
+    <p><b>{{ t('city') }}:</b> {{ user.city or '—' }}</p>
+    <p><b>{{ t('about') }}:</b> {{ user.about or '—' }}</p>
+</div>
+
+<div class="profile-card">
+    <h3 style="margin-top:0">🌐 {{ t('language') }}</h3>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+        <a href="{{ url_for('set_lang', lang='ru') }}"
+           class="btn-primary lang-btn {% if lang == 'ru' %}active-lang{% endif %}">
+            🇷🇺 Русский
+        </a>
+        <a href="{{ url_for('set_lang', lang='en') }}"
+           class="btn-primary lang-btn {% if lang == 'en' %}active-lang{% endif %}">
+            🇬🇧 English
+        </a>
+    </div>
+    <p class="muted" style="margin-top:10px;font-size:13px">
+        {{ t('current_lang') }}
+    </p>
+</div>
+
+{% if admin_data %}
+<hr style="margin:36px 0;border-color:#2a2f36">
+
+<h1 style="background:linear-gradient(135deg,#c084fc,#e879f9,#6366f1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">
+    👑 {{ t('admin_panel') }}
+</h1>
+
+<div class="profile-stats" style="margin-bottom:24px">
+    <div><b>{{ admin_data.stats.users }}</b><span>{{ t('users') }}</span></div>
+    <div><b>{{ admin_data.stats.posts }}</b><span>{{ t('posts') }}</span></div>
+    <div><b>{{ admin_data.stats.messages }}</b><span>{{ t('messages') }}</span></div>
+    <div><b style="background:linear-gradient(135deg,#f4212e,#e879f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">
+        {{ admin_data.stats.blocked }}
+    </b><span>{{ t('blocked') }}</span></div>
+    <div><b style="background:linear-gradient(135deg,#f59e0b,#e879f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">
+        {{ admin_data.stats.muted }}
+    </b><span>{{ t('muted') }}</span></div>
+</div>
+
+<h2>{{ t('users') }}</h2>
+
+<div class="dialogs">
+    {% for u in admin_data.users %}
+        <div class="dialog" style="cursor:default;flex-wrap:wrap">
+            <div class="dialog-avatar">
+                {% if u.avatar %}
+                    <img src="{{ url_for('static', filename='avatars/' + u.avatar) }}" alt="">
+                {% else %}
+                    <div class="avatar-placeholder">{{ u.username[0].upper() }}</div>
+                {% endif %}
+            </div>
+            <div class="dialog-body">
+                <div class="dialog-top">
+                    <span class="dialog-name">
+                        @{{ u.username }}
+                        {% if u.is_admin %}<span style="color:#c084fc">👑</span>{% endif %}
+                        {% if u.is_blocked %}<span style="color:#f4212e">🚫</span>{% endif %}
+                        {% if u.muted_until %}<span style="color:#f59e0b">🔇</span>{% endif %}
+                    </span>
+                    <span class="dialog-time">{{ u.posts_count }} {{ t('posts') }}</span>
+                </div>
+                {% if u.full_name %}<div class="dialog-last">{{ u.full_name }}</div>{% endif %}
+                {% if u.muted_until %}<div class="dialog-last" style="color:#f59e0b">{{ t('muted') }}: {{ u.muted_until }}</div>{% endif %}
+            </div>
+            {% if u.id != user.id %}
+            <div style="display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:8px">
+                <form method="POST" action="{{ url_for('admin_mute_user', user_id=u.id) }}" style="display:inline-flex;gap:4px;align-items:center">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                    <input type="number" name="minutes" value="60" min="1" max="43200"
+                           style="width:70px;padding:5px 8px;font-size:12px;border-radius:6px"
+                           title="Minutes">
+                    <button class="delete-btn" type="submit" style="color:#f59e0b;border-color:#f59e0b">
+                        {% if u.muted_until %}{{ t('unmute') }}{% else %}{{ t('mute') }}{% endif %}
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_block_user', user_id=u.id) }}" style="display:inline">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                    <button class="delete-btn" type="submit">
+                        {% if u.is_blocked %}{{ t('unban') }}{% else %}{{ t('ban') }}{% endif %}
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_toggle_admin', user_id=u.id) }}" style="display:inline">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                    <button class="delete-btn" type="submit">
+                        {% if u.is_admin %}−👑{% else %}+👑{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% else %}
+                <span class="dialog-time" style="color:#c084fc">{{ t('this_is_you') }}</span>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<h2>🛡️ {{ t('recent_events') }}</h2>
+<p><a href="{{ url_for('admin_security_log') }}">→ {{ t('security_log') }}</a></p>
+
+<div class="dialogs">
+    {% for e in admin_data.events %}
+        <div class="dialog" style="cursor:default">
+            <div class="dialog-body">
+                <div class="dialog-top">
+                    <span class="dialog-name" style="font-family:monospace;font-size:13px">{{ e.event }}</span>
+                    <span class="dialog-time">{{ e.created_at|humanize }}</span>
+                </div>
+                <div class="dialog-last">
+                    {% if e.username %}@{{ e.username }} · {% endif %}
+                    IP: {{ e.ip or '?' }}
+                    {% if e.details %} · {{ e.details }}{% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
