@@ -72,9 +72,9 @@ Aura-flask/
 ├── test_app.py         # 6 автотестов
 ├── templates/          # HTML-шаблоны
 └── static/             # CSS, иконки
-<div align="center">
+
 NoiZoN · 2 курс · IT Hub
 
 GitHub · Telegram
 
-</div> ```
+
