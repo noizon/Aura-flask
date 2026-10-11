@@ -1,79 +1,350 @@
-<div align="center">
+# 🌐 Aura — мини-соцсеть на Flask
 
-# 🌐 Aura
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Flask](https://img.shields.io/badge/Flask-3.x-green)
+![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey)
+![Tests](https://img.shields.io/badge/tests-6%20passed-brightgreen)
+![Security](https://img.shields.io/badge/security-CSRF%20%7C%20XSS%20%7C%20SQLi-red)
+![License](https://img.shields.io/badge/License-Educational-yellow)
 
-### Мини-соцсеть на Flask с акцентом на безопасность
-
-🔗 **[→ Живая демонстрация ←](https://aura-flask-l5sb.onrender.com)**
-
----
-
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Online-00ba7c?style=for-the-badge&logo=render&logoColor=white)](https://aura-flask-l5sb.onrender.com)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Tests](https://img.shields.io/badge/Tests-6%2F6_passed-00ba7c?style=for-the-badge)](https://github.com/noizon/Aura-flask)
-
-</div>
+Полноценная социальная сеть с акцентом на **безопасность**: регистрация, посты, чаты, подписки, реакции, комментарии, репосты, тренды, админ-панель с модерацией.
 
 ---
 
-## ✨ Что умеет
+## 📋 Содержание
 
-| | |
+- [Возможности](#-возможности)
+- [Безопасность](#-безопасность)
+- [Технологии](#-технологии)
+- [Структура проекта](#-структура-проекта)
+- [Установка](#-установка)
+- [Запуск](#-запуск)
+- [Тесты](#-тесты)
+- [Админ-доступ](#-админ-доступ)
+- [Схема базы данных](#-схема-базы-данных)
+- [Ограничения](#-ограничения)
+
+---
+
+## ✨ Возможности
+
+### 👤 Пользователи
+- Регистрация с проверкой сложности пароля
+- Вход/выход, хранение сессии 7 дней
+- Редактирование профиля (имя, возраст, город, био, аватар)
+- Аватары с магической проверкой типа файла
+
+### 📝 Посты
+- Публикация текста (до 280 символов) с фото
+- Реакции (6 эмодзи: 👍 ❤️ 😂 🔥 😮 😢)
+- Комментарии через AJAX (без перезагрузки)
+- Репосты
+- Счётчик просмотров (уникальных по юзеру)
+- Сохранение в закладки
+- Удаление своих постов
+
+### 👥 Социальное
+- Подписки/отписки
+- Лента «Для вас» и «Подписки»
+- Уведомления (подписка, реакция, коммент, репост)
+- Поиск людей
+- Чаты с диалогами и непрочитанными
+- Онлайн-статус (последняя активность < 5 мин)
+
+### 🔥 Тренды
+- Хэштеги (#тег) — кликабельны
+- Страница трендов — топ-30 по популярности
+- Клик на тег → все посты с ним
+
+### 👑 Админ-панель
+- Встроена прямо в свой профиль (`/profile`)
+- Скрытый админ-профиль (другие видят 404)
+- Статистика: юзеры, посты, сообщения, забанено, в муте
+- Модерация:
+  - **Бан** — блокировка входа
+  - **Мут** — запрет постить/комментить/писать в чат на N минут
+  - **Назначение админов**
+- Security log (последние события)
+
+### 🌐 Мультиязычность
+- Переключатель 🇷🇺 Русский / 🇬🇧 English
+- Хранится в сессии
+
+---
+
+## 🔐 Безопасность
+
+| Механизм | Реализация |
 |---|---|
-| 👤 **Аккаунты** | Регистрация, вход, профили с аватарами |
-| 📝 **Посты** | Фото, реакции, комментарии, репосты, закладки |
-| 💬 **Чаты** | Личные сообщения и диалоги |
-| 👥 **Соцсеть** | Подписки, лента, уведомления, поиск, онлайн-статус |
-| 🔥 **Тренды** | Топ хэштегов |
-| 👑 **Админка** | Бан, мут, назначение админов, security log |
-| 🌐 **Языки** | Русский / English |
+| **Хэширование паролей** | `werkzeug.security.generate_password_hash` (PBKDF2 + salt) |
+| **CSRF-защита** | Токен в сессии + проверка на всех POST/PUT/DELETE через `hmac.compare_digest` |
+| **SQL-инъекции** | Только параметризованные запросы (`?`), ни одной f-строки с данными |
+| **XSS** | Jinja autoescape + кастомный фильтр `highlight` (экранирует до подстановки ссылок) |
+| **Rate limiting** | 5 логинов/15 мин, 3 регистрации/час, 10 постов/мин, 20 комментов/мин |
+| **Brute-force защита** | Двойная: in-memory лимитер + проверка `login_attempts` в БД |
+| **Валидация файлов** | Проверка **magic bytes** (не только расширения) через `validate_upload` |
+| **Path traversal** | `is_safe_filename` блокирует `../`, `/`, `\`, нулевые байты |
+| **Security headers** | CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
+| **Безопасные cookies** | HTTPONLY, SAMESITE=Lax |
+| **Session fixation** | `session.clear()` при успешном входе |
+| **Security logging** | Таблицы `login_attempts` и `security_log` — все события |
 
-## 🛡 Безопасность
+---
 
-- **CSRF** — `hmac.compare_digest` на всех POST
-- **Rate limiting** — 5 логинов/15 мин, 3 регистрации/час
-- **Хэширование** — Werkzeug (PBKDF2 + salt)
-- **SQL-инъекции** — только параметризованные запросы
-- **XSS** — Jinja autoescape + кастомный фильтр
-- **Валидация файлов** — проверка magic bytes
-- **Security headers** — CSP, X-Frame-Options, nosniff
-- **Security log** — все события в БД
+## 🛠 Технологии
 
-## 🛠 Стек
+- **Python 3.10+**
+- **Flask** — веб-фреймворк
+- **Werkzeug** — хэширование, безопасность
+- **SQLite** — база данных (с WAL-режимом)
+- **Jinja2** — шаблонизатор
+- **HTML5 / CSS3 / JavaScript (Vanilla)** — фронтенд
+- **Fetch API** — AJAX-запросы (реакции, комменты, репосты)
 
-`Flask` · `SQLite` · `Werkzeug` · `Jinja2` · `HTML` · `CSS` · `JavaScript`
+**Без внешних CSS/JS-библиотек** — всё написано вручную.
 
-> Без внешних CSS/JS-библиотек — всё написано вручную.
+---
+
+## 📁 Структура проекта
+
+```
+myapp/
+├── app.py                  # Главный файл (роуты, конфиг, логика)
+├── messages_db.py          # Работа с чатами
+├── social_db.py            # Реакции и комментарии
+├── follow_db.py            # Подписки, уведомления, сохранённые
+├── security.py             # Утилиты безопасности (CSRF, валидация, RateLimiter)
+├── security_db.py          # Логирование безопасности
+├── test_app.py             # Автотесты безопасности
+├── README.md               # Этот файл
+├── users.db                # База данных (создаётся автоматически)
+├── .secret_key             # Секретный ключ (создаётся автоматически)
+├── templates/
+│   ├── base.html           # Базовый шаблон (навбар, JS)
+│   ├── login.html
+│   ├── register.html
+│   ├── feed.html           # Лента
+│   ├── profile.html        # Свой профиль + админка
+│   ├── profile_edit.html
+│   ├── user_profile.html   # Чужой профиль
+│   ├── saved.html
+│   ├── notifications.html
+│   ├── chats.html
+│   ├── chat.html
+│   ├── search.html
+│   ├── trends.html
+│   ├── admin_log.html
+│   ├── 403.html
+│   ├── 404.html
+│   └── 500.html
+└── static/
+    ├── style.css           # Все стили (тёмная тема Aura)
+    ├── avatars/            # Аватары пользователей
+    └── posts/              # Картинки постов
+```
+
+---
+
+## 💻 Установка
+
+### 1. Клонируй проект
+
+```bash
+git clone https://github.com/твой-логин/aura.git
+cd aura
+```
+
+### 2. Установи зависимости
+
+```bash
+pip install flask werkzeug
+```
+
+⚠️ **pytest не требуется** — тесты написаны на чистом Python.
+
+### 3. Создай папки для загрузок
+
+```bash
+mkdir static/avatars static/posts
+```
+
+---
 
 ## 🚀 Запуск
 
 ```bash
-git clone https://github.com/noizon/Aura-flask.git
-cd Aura-flask
-pip install -r requirements.txt
 python app.py
-Открыть → http://127.0.0.1:5000
+```
 
-🧪 Тесты
-bash
+Открой в браузере:
+
+```
+http://127.0.0.1:5000
+```
+
+При первом запуске:
+- Создастся база `users.db`
+- Создастся `.secret_key`
+- Создастся админ `NoiZoN` (пароль указан в `app.py`)
+
+---
+
+## 🧪 Тесты
+
+Запуск автотестов безопасности:
+
+```bash
 python test_app.py
-6 / 6 passed — SQL-инъекции, CSRF, rate limit, XSS, чужой пост, path traversal.
+```
 
-📁 Структура
-text
-Aura-flask/
-├── app.py              # Роуты, конфиг
-├── messages_db.py      # Чаты
-├── social_db.py        # Реакции, комментарии
-├── follow_db.py        # Подписки, уведомления
-├── security.py         # CSRF, rate limiter, валидация
-├── security_db.py      # Логи безопасности
-├── test_app.py         # 6 автотестов
-├── templates/          # HTML-шаблоны
-└── static/             # CSS, иконки
+**Ожидаемый вывод:**
 
-NoiZoN · 2 курс · IT Hub
+```
+▶ ТЕСТ 1: SQL-инъекция в логине
+  ✅ PASS  SQL-инъекция не проходит, таблица цела
 
-GitHub - noizon · Telegram - NoiZoNxSolo
+▶ ТЕСТ 2: CSRF защита
+  ✅ PASS  CSRF блокирует POST без токена (403)
 
+▶ ТЕСТ 3: Rate limit (5 попыток)
+  ✅ PASS  Rate limit сработал на попытке 6
+
+▶ ТЕСТ 4: Удаление чужого поста
+  ✅ PASS  Чужой пост не удалось удалить
+
+▶ ТЕСТ 5: XSS экранируется
+  ✅ PASS  Jinja autoescape экранирует HTML — XSS не пройдёт
+  ✅ PASS  Фильтр highlight тоже экранирует XSS
+
+=======================================================
+ИТОГО:  ✅ 6 passed   ❌ 0 failed
+=======================================================
+```
+
+Тесты используют **отдельную БД** `test_users.db`, которая удаляется после прогона. **Основная база не трогается.**
+
+---
+
+## 👑 Админ-доступ
+
+Админ создаётся **автоматически** при первом запуске.
+
+| Поле | Значение |
+|---|---|
+| **Логин** | `NoiZoN` |
+| **Пароль** | указан в `app.py` |
+| **URL админки** | `/profile` (встроена в профиль) |
+
+⚠️ **Пароль в открытом виде в коде — только для dev-версии.** В продакшене — через переменные окружения:
+
+```bash
+export AURA_SECRET_KEY=твой-секретный-ключ
+```
+
+### Возможности админа
+- 👑 Скрытый профиль (другие видят `/user/NoiZoN` как **404**)
+- 👥 Список всех пользователей
+- 🚫 **Бан** — блокировка входа
+- 🔇 **Мут** — запрет постить/комментить/писать (N минут)
+- 👑 Назначение/снятие админов
+- 🛡️ Просмотр `security_log` (все события: логины, CSRF-фейлы, баны)
+
+---
+
+## 🗄 Схема базы данных
+
+### `users`
+```sql
+id              INTEGER PK
+username        TEXT UNIQUE NOT NULL
+password_hash   TEXT NOT NULL
+full_name       TEXT DEFAULT ''
+age             INTEGER DEFAULT 0
+city            TEXT DEFAULT ''
+about           TEXT DEFAULT ''
+avatar          TEXT DEFAULT ''
+last_seen       TIMESTAMP
+is_admin        INTEGER DEFAULT 0
+is_blocked      INTEGER DEFAULT 0
+muted_until     TIMESTAMP
+```
+
+### `posts`
+```sql
+id              INTEGER PK
+user_id         INTEGER NOT NULL
+content         TEXT NOT NULL
+image           TEXT DEFAULT ''
+repost_of       INTEGER DEFAULT NULL  -- id оригинального поста
+views           INTEGER DEFAULT 0
+created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+```
+
+### Остальные таблицы
+- `messages` — сообщения чата
+- `reactions` — реакции на посты
+- `comments` — комментарии
+- `follows` — подписки
+- `notifications` — уведомления
+- `saved_posts` — сохранённые посты
+- `post_views` — просмотры (уникальные)
+- `login_attempts` — попытки входа
+- `security_log` — события безопасности
+
+---
+
+## ⚠️ Ограничения
+
+Это **учебный проект**, поэтому есть осознанные ограничения:
+
+1. **SQLite** — не подходит для высокой нагрузки. В продакшене → **PostgreSQL**.
+2. **In-memory RateLimiter** — сбрасывается при перезапуске. Плюс дублирующая защита в БД. В продакшене → **Redis**.
+3. **Без HTTPS** — cookie передаются в открытом виде. В продакшене → `SESSION_COOKIE_SECURE = True`.
+4. **SECRET_KEY в файле** — в проде только через переменные окружения.
+5. **Нет тестов покрытия** — 6 тестов покрывают только безопасность.
+
+---
+
+## 🎓 Что реализовано (для защиты)
+
+### Архитектура
+- ✅ Модульность — 6 Python-модулей по зонам ответственности
+- ✅ Параметризованные SQL-запросы везде
+- ✅ Разделение логики и представления
+
+### Безопасность
+- ✅ CSRF через `hmac.compare_digest`
+- ✅ Rate limiting (свой класс `RateLimiter`)
+- ✅ Magic bytes валидация файлов
+- ✅ Проверка сложности пароля
+- ✅ Security logging в БД
+- ✅ Security headers (CSP, X-Frame-Options)
+- ✅ Защита от session fixation
+
+### Функциональность
+- ✅ Аутентификация + сессии
+- ✅ CRUD постов
+- ✅ Чаты (1-на-1)
+- ✅ Социальные графы (подписки)
+- ✅ Реакции + комментарии (AJAX)
+- ✅ Уведомления
+- ✅ Админ-модерация (бан/мут)
+- ✅ Мультиязычность (RU/EN)
+
+### Тестирование
+- ✅ 6 автотестов безопасности
+- ✅ Отдельная тестовая БД
+
+---
+
+## 📝 Лицензия
+
+Учебный проект. Свободное использование.
+
+---
+
+## 👨‍💻 Автор
+
+**NoiZoN** — 2 курс, IT Hub
+
+Проект создан как демонстрация навыков backend-разработки на Flask с акцентом на безопасность.
