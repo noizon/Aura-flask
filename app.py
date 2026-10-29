@@ -68,6 +68,8 @@ login_limiter = RateLimiter(max_attempts=5, window_seconds=15 * 60)
 register_limiter = RateLimiter(max_attempts=3, window_seconds=60 * 60)
 post_limiter = RateLimiter(max_attempts=10, window_seconds=60)
 comment_limiter = RateLimiter(max_attempts=20, window_seconds=60)
+# 👇 НОВЫЙ ЛИМИТЕР (Защита от флуда API и страниц)
+api_limiter = RateLimiter(max_attempts=60, window_seconds=60)
 
 
 # ============================================================
@@ -339,7 +341,7 @@ def inject_globals():
 
 
 # ============================================================
-# CSRF
+# CSRF И ЗАЩИТА ОТ СПАМА (DoS)
 # ============================================================
 def csrf_token():
     if '_csrf' not in session:
@@ -348,6 +350,16 @@ def csrf_token():
 
 
 app.jinja_env.globals['csrf_token'] = csrf_token
+
+
+# 👇 НОВЫЙ ФИКС: Глобальный лимитер для API и ленты
+@app.before_request
+def global_rate_limit():
+    if request.path.startswith('/api/') or request.path in ('/feed', '/search'):
+        ip = get_client_ip()
+        if not api_limiter.is_allowed(ip):
+            return jsonify({'error': 'Too Many Requests. Slow down.'}), 429
+        api_limiter.hit(ip)
 
 
 @app.before_request
@@ -1214,4 +1226,5 @@ with app.app_context():
 
 if __name__ == '__main__':
     debug_mode = os.environ.get('AURA_DEBUG', '0') == '1'
-    app.run(debug=debug_mode, host='127.0.0.1', port=5000)
+    # 👇 ФИКС: threaded=True позволяет серверу отбивать атаки параллельно
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000, threaded=True)
